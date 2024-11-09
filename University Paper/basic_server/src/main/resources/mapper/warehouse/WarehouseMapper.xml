@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zp.basic.warehouse.mapper.WarehouseMapper">
+    <select id="selectPageWarehouse" resultType="com.zp.basic.warehouse.vo.SelectPageWarehouseVo">
+
+        select #{productId} as product_id,warehouse_id,warehouse_code,warehouse_name
+        from t_warehouse
+        where warehouse_id not in(
+        select warehouse_id from product_warehouse_rel
+        where product_id=#{productId}
+        )
+        <if test="warehouseCode!=null and warehouseCode!=''">
+            and warehouse_code LIKE CONCAT('%',#{warehouseCode},'%')
+        </if>
+        ORDER BY warehouse_code
+    </select>
+
+    <select id="selectPageBindWarehouse" resultType="com.zp.basic.warehouse.vo.SelectPageWarehouseVo">
+        select
+        t1.status,t1.product_warehouse_id,t1.product_id,t2.warehouse_id,t2.warehouse_code,t2.warehouse_name,t1.stock
+        from product_warehouse_rel t1
+        join t_warehouse t2
+        on t1.warehouse_id=t2.warehouse_id
+        where t1.product_id=#{productId}
+        <if test="warehouseCode!=null and warehouseCode!=''">
+            and t2.warehouse_code LIKE CONCAT('%',#{warehouseCode},'%')
+        </if>
+        ORDER BY t1.create_time desc,t2.warehouse_code
+    </select>
+
+    <select id="selectStock" resultType="com.zp.basic.product.dto.ProductStockDto">
+        select product_id,sum(stock) as stock from product_warehouse_rel
+        where status=1
+        and product_id in
+        <foreach collection="list" item="productId" index="index" open="(" close=")" separator=",">
+            #{productId}
+        </foreach>
+        GROUP BY product_id
+    </select>
+
+    <select id="findSockByProductIdAndWarehouseCode" resultType="java.math.BigDecimal">
+        select t2.stock
+        from t_warehouse t1
+                 join product_warehouse_rel t2
+                      on t1.warehouse_id = t2.warehouse_id
+        where t1.warehouse_code = #{code}
+          and t2.product_id = #{productId}
+          and t2.status = '1'
+    </select>
+
+    <update id="deductingTheStockByProductIdAndWarehouseId">
+        update product_warehouse_rel
+        set stock=stock - #{num}
+        where product_id = #{productId}
+          and warehouse_id = #{warehouseId}
+    </update>
+</mapper>

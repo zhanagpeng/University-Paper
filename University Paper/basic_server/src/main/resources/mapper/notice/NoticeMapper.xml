@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zp.basic.notice.mapper.NoticeMapper">
+    <select id="selectPageNotice" resultType="com.zp.basic.notice.vo.NoticePageVo">
+        select t2.n_id,t3.u_name,t1.e_id,t1.e_topic, t1.create_time,t2.have_read
+        from t_email t1
+        join t_notice t2
+        on t1.e_id = t2.e_id
+        join t_user t3
+        on t1.create_user=t3.u_id
+        <where>
+            t2.receive_man = #{noticePageRequest.userId}
+            <if test="noticePageRequest.haveRead!=null and noticePageRequest.haveRead!=''">
+                and t2.have_read=#{noticePageRequest.haveRead}
+            </if>
+            <if test="noticePageRequest.sendMan!=null and noticePageRequest.sendMan!=''">
+                and t3.u_name like concat('%',#{noticePageRequest.sendMan},'%')
+            </if>
+            <if test="noticePageRequest.beginDate!=null and noticePageRequest.beginDate!=''">
+                and t1.create_time &gt;= concat(#{noticePageRequest.beginDate},' 00:00:00')
+            </if>
+            <if test="noticePageRequest.endDate!=null and noticePageRequest.endDate!=''">
+                and t1.create_time &lt;= concat(#{noticePageRequest.endDate},' 23:59:59')
+            </if>
+        </where>
+        order by t1.create_time desc,t3.u_name
+    </select>
+    <update id="setAllHaveBeenReadByUserId">
+        update t_notice
+        set have_read='1'
+        where receive_man = #{userId}
+    </update>
+</mapper>

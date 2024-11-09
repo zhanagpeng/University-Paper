@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zp.auth.role.mapper.RoleMapper">
+    <select id="selectPageRoles" resultType="Role">
+        select *
+        from t_role
+        <where>
+            1=1
+            <if test="rolePageRequest.rName!=null and rolePageRequest.rName!=''">
+                and r_name like CONCAT('%', #{rolePageRequest.rName}, '%')
+            </if>
+            <if test="rolePageRequest.cDate!=null and rolePageRequest.cDate!=''">
+                and SUBSTRING(create_time,1,8)=SUBSTRING(#{rolePageRequest.cDate},1,8)
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <delete id="deleteBindMenusByRid">
+        delete
+        from t_user_role
+        where r_id = #{rId}
+    </delete>
+
+    <insert id="insertBindMenus">
+        <selectKey keyProperty="rmId" resultType="java.lang.String" order="BEFORE">
+            select REPLACE(UUID(),'-','')
+        </selectKey>
+        INSERT INTO t_user_role (rm_id, r_id, m_id)
+        VALUES (#{rmId}, #{rId}, #{mId});
+    </insert>
+</mapper>

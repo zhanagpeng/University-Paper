@@ -1,0 +1,41 @@
+server:
+  port: 8173
+  tomcat:
+    threads:
+      max: 1000 #设置 Tomcat 最大线程数（表示 Tomcat 处理请求的线程池大小，即为 Tomcat 的并发处理能力）
+    accept-count: 200 #设置 Tomcat 最大连接数（表示等待 Tomcat 线程处理的请求队列大小）
+spring:
+  application:
+    name: basicserver # 应用名称，会在Eureka中显示
+#Mysql
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/zf_master?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&&failOverReadOnly=false
+    username: root
+    password: root
+#mybatisplus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: false #禁用缓存
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  type-aliases-package: com.zp.basic.*.model #实体对象扫描，减少xml编写
+#eureka配置
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8071/eureka/
+  instance:
+    prefer-ip-address: true # 当调用gapplication.ymletHostname获取实例的hostname时，返回ip而不是host名称
+#ribbon配置
+ribbon:
+  # Connect timeout used by Apache HttpClient
+  ConnectTimeout: 200000
+  # Read timeout used by Apache HttpClient
+  ReadTimeout: 200000
+#日志
+logging:
+  level:
+    com.zp.anth.feign.user.client.UserFeignClient: debug

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zp.basic.order.mapper.OrderMapper">
+    <select id="selectPageOrderByUserIdAndOrderNum" resultType="Order">
+        select *
+        from t_order
+        where user_id = #{userId}
+          and status=${status}
+          <if test="orderNum!=null and orderNum!=''">
+              and order_num like CONCAT("%",#{orderNum},"%")
+          </if>
+        order by create_time desc
+    </select>
+</mapper>

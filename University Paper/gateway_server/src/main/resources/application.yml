@@ -1,0 +1,48 @@
+server:
+  port: 8172
+  tomcat:
+    threads:
+      max: 1000 #设置 Tomcat 最大线程数（表示 Tomcat 处理请求的线程池大小，即为 Tomcat 的并发处理能力）
+    accept-count: 200 #设置 Tomcat 最大连接数（表示等待 Tomcat 线程处理的请求队列大小）
+spring:
+  application:
+    name: gatewayserver # 应用名称，会在Eureka中显示
+#配置GateWay路由
+  cloud:
+    gateway:
+      routes:
+#        - id: product_server #路由id,保持唯一
+##          uri: http://127.0.0.1:8099 #映射地址
+#          uri: lb://productserver #映射地址 lb:根据euraka上的服务名称获取请求路径
+#          predicates:
+#          - Path=/product_server/** #映射路径  访问方式：http://127.0.0.1:8150/queryPnameByPid?pId=1
+#          filters: #配置过滤器
+#          - RewritePath=/product_server/(?<segment>.*),/$\{segment} #路径重写过滤器，将productserver置为空
+      #配置自动根据微服务名转发
+      discovery:
+        locator:
+          enabled: true #开启根据服务名转发
+          lower-case-service-id: true #服务名小写转换
+#eureka配置
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8071/eureka/
+  instance:
+    prefer-ip-address: true # 当调用gapplication.ymletHostname获取实例的hostname时，返回ip而不是host名称
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 20
+#ribbon配置
+ribbon:
+  # Connect timeout used by Apache HttpClient
+  ConnectTimeout: 200000
+  # Read timeout used by Apache HttpClient
+  ReadTimeout: 200000
+#提高日志级别为WARN
+logging:
+  level:
+    com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver: WARN
+#白名单
+whitelist: /404,/authserver/userController/checkUser.form,/authserver/MenuController/getMenuByUser.json
+#是否开启网关拦截
+onswitch: false

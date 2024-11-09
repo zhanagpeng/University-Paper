@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zp.auth.user.mapper.UserMapper">
+    <select id="listUser" resultType="user">
+        select *
+        from t_user
+        <where>
+            1=1
+            <if test="userPageRequest.userName!=null and userPageRequest.userName!=''">
+                and u_name like CONCAT('%', #{userPageRequest.userName}, '%')
+            </if>
+            <if test="userPageRequest.roleId!=null and userPageRequest.roleId!=''">
+                and r_id = #{userPageRequest.roleId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

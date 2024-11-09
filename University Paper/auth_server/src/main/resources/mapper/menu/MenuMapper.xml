@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zp.auth.menu.mapper.MenuMapper">
+    <select id="selectMenusByRid" resultType="com.zp.auth.menu.model.Menu">
+        select m.*
+        from t_role r
+                 join t_user_role ur
+                      on r.r_id = ur.r_id
+                 join t_menu m
+                      on ur.m_id = m.m_id
+        where r.r_id = #{rId}
+          and is_navigation = '0'
+        order by m.m_sort, m.m_name desc
+    </select>
+
+    <select id="findMenuAndParentMenuById" resultType="com.zp.auth.menu.dto.MenuAndParentMenuDto">
+        select t1.m_name as p_menu_name, t2.*
+        from t_menu t1
+                 join (
+            select *
+            from t_menu
+            where m_id = #{id}
+        ) t2
+        on t1.m_id = t2.p_menu
+    </select>
+</mapper>
